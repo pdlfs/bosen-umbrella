@@ -58,3 +58,8 @@ git:
 branches:
   only:
     - master
+
+notifications:
+  slack:
+    on_success: never
+    on_failure: never
