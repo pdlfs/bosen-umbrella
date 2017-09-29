@@ -1,6 +1,8 @@
 **Download, build, and install bosen, its friends and their minimum dependencies
 in a single step.**
 
+[![Build Status](https://travis-ci.org/pdlfs/bosen-umbrella.svg?branch=master)](https://travis-ci.org/pdlfs/bosen-umbrella)
+
 # bosen-umbrella
 
 This package is designed to help our collaborators quickly setup bosen on
