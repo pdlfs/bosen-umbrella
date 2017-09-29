@@ -1,0 +1,58 @@
+language: cpp
+sudo: required
+dist: xenial
+
+compiler:
+  - gcc
+
+os:
+  - linux
+
+addones:
+  apt:
+    packages:
+      - git
+      - cmake-data
+      - cmake
+      - g++-4.4
+      - g++-4.6
+      - g++-4.8
+      - g++-5
+      - g++-6
+      - g++-7
+
+env:
+  global:
+    - GIT_SSL_NO_VERIFY=true
+  matrix:
+    - GCC=4.4
+    - GCC=4.6
+    - GCC=4.8
+    - GCC=5
+    - GCC=6
+    - GCC=7
+
+install:
+  - export CXX="g++-${GCC}"
+  - export CC="gcc-${GCC}"
+
+before_script:
+  - ${CXX} --version
+  - ${CC} --version
+  - cmake --version
+  - git --version
+
+script:
+  - date
+  - mkdir -p /tmp/bosen
+  - cmake -DCMAKE_INSTALL_PREFIX=/tmp/bosen .
+  - make
+  - date
+
+git:
+  lfs_skip_smudge: true
+  submodules: false
+
+brances:
+  only:
+    - master
