@@ -1,6 +1,6 @@
 language: cpp
 sudo: required
-dist: xenial
+dist: trusty
 
 compiler:
   - gcc
@@ -11,6 +11,7 @@ os:
 addons:
   apt:
     sources:
+      - sourceline: 'ppa:george-edison55/cmake-3.x'
       - ubuntu-toolchain-r-test
     packages:
       - git
