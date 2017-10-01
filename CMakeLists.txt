@@ -52,6 +52,6 @@ include (umbrella-main)
 #
 # set git tags for modules
 #
-#umbrella_opt_default (GFLAGS_TAG "xxx")
+umbrella_opt_default (GFLAGS_TAG "46f73f8")
 
-#include (modules/gflags)
+include (modules/gflags)
