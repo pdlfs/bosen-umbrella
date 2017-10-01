@@ -16,7 +16,7 @@ if (NOT TARGET gflags)
 # umbrella option variables
 #
 umbrella_defineopt (GFLAGS_REPO
-     "git@github.com:gflags/gflags.git"
+     "https://github.com/gflags/gflags.git"
      STRING "gflags GIT repository")
 umbrella_defineopt (GFLAGS_TAG "master" STRING "gflags GIT tag")
 umbrella_defineopt (GFLAGS_TAR "gflags-${GFLAGS_TAG}.tar.gz"
