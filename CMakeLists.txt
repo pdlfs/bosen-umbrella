@@ -4,19 +4,15 @@
 #              gamvrosi@cs.cmu.edu
 #
 
-# command line config:
 #
-# -DCMAKE_INSTALL_PREFIX=/tmp/delta       # where to install
-#                                         # defaults to /usr/local
+# general command line config:
 #
-
+#   -DCMAKE_INSTALL_PREFIX=/usr/local      # installation prefix
+#   -DCMAKE_BUILD_TYPE=RelWithDebInfo      # or Release, Debug, etc.
+#      (XXX: currently only applied to cmake-based builds)
 #
-# [optional config vars]
-#
-# -DCMAKE_BUILD_TYPE=RelWithDebInfo       # or Release, Debug, etc.
-#     (this only gets reflected to cmake-based external builds,
-#      it isn't applied to autotools-based builds...)
-# -DSKIP_TESTS=OFF                    # skip running unit tests
+#   -DUMBRELLA_BUILD_TESTS=ON              # build unit tests?
+#   -DUMBRELLA_SKIP_TESTS=OFF              # skip running unit tests?
 #
 # finding dependencies:
 #
@@ -27,21 +23,28 @@
 # -DCMAKE_LIBRARY_PATH='/pkg/lib'         # extra library path
 #
 # note these are all cmake lists (so more than one directory can
-# be specified).
+# be specified using a semicolon to create a path).
 #
 # specifying alternate compilers (overrides CC/CXX environment variables):
 # -DCC=/bin/cc
 # -DCXX=/bin/cxx
 #  (you can also use the long form names CMAKE_C_COMPILER/CMAKE_CXX_COMPILER)
 #
-cmake_minimum_required (VERSION 3.1)
+# specifying which mpi to use by pointing at the wrappers:
+# -DMPI_C_COMPILER=/usr/bin/mpicc
+# -DMPI_CXX_COMPILER=/usr/bin/mpicxx
+# -DMPIEXEC=/usr/bin/mpiexec
+#
+
+cmake_minimum_required (VERSION 3.0)
 
 #
 # put the umbrella scripts in our search path and include umbrella-init
-# (configuration that needs to take place prior to declaring "project")
+# (umbrella-init needs to run before "project")
 #
 list (APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/umbrella")
 include (umbrella-init)
+
 project (bosen-umbrella C CXX)
 
 #
@@ -54,4 +57,5 @@ include (umbrella-main)
 #
 umbrella_opt_default (GFLAGS_TAG "46f73f8")
 
-include (modules/gflags)
+include (umbrella/gflags)
+include (umbrella/glog)
