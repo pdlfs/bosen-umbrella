@@ -60,10 +60,12 @@ umbrella_opt_default (GFLAGS_TAG "46f73f8")       # v2.2.1
 umbrella_opt_default (GLOG_TAG "2a6df662")        # Oct 2017
 umbrella_opt_default (GOOGLETEST_TAG "ec44c6c")   # 1.8.0
 umbrella_opt_default (GPERFTOOLS_TAG "bf840de")   # 2.6.1
+umbrella_opt_default (LEVELDB_TAG "a53934a")      # 1.20
 umbrella_opt_default (LIBCONFIG_TAG "5a06a16")    # v1.6
 umbrella_opt_default (LIBZMQ_TAG "8d75d50")       # 4.2.2
 umbrella_opt_default (SNAPPY_TAG "b02bfa7")       # 1.1.7
 umbrella_opt_default (SPARSEHASH_TAG "6af4bcf")   # 2.0.3
+umbrella_opt_default (YAML_CPP " b57efe9 ")       # 0.5.3
 
 #
 # other options
@@ -75,7 +77,9 @@ include (umbrella/gflags)
 include (umbrella/glog)
 include (umbrella/googletest)
 include (umbrella/gperftools)
+include (umbrella/leveldb)
 include (umbrella/libconfig)
 include (umbrella/libzmq)
 include (umbrella/snappy)
 include (umbrella/sparsehash)
+include (umbrella/yaml-cpp)
