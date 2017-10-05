@@ -66,7 +66,7 @@ umbrella_opt_default (LIBCONFIG_TAG "5a06a16")    # v1.6
 umbrella_opt_default (LIBZMQ_TAG "8d75d50")       # 4.2.2
 umbrella_opt_default (SNAPPY_TAG "b02bfa7")       # 1.1.7
 umbrella_opt_default (SPARSEHASH_TAG "6af4bcf")   # 2.0.3
-umbrella_opt_default (YAML_CPP " b57efe9 ")       # 0.5.3
+umbrella_opt_default (YAML_CPP_TAG "b57efe9 ")    # 0.5.3
 
 #
 # other options
@@ -82,6 +82,7 @@ include (umbrella/gperftools)
 include (umbrella/leveldb)
 include (umbrella/libconfig)
 include (umbrella/libzmq)
+include (umbrella/popt)         # its 1.16 from a tar file
 include (umbrella/snappy)
 include (umbrella/sparsehash)
 include (umbrella/yaml-cpp)
