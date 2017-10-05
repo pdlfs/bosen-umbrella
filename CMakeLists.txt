@@ -85,3 +85,14 @@ include (umbrella/libzmq)
 include (umbrella/snappy)
 include (umbrella/sparsehash)
 include (umbrella/yaml-cpp)
+
+#
+# other packages
+#
+ExternalProject_Add (float16_compressor
+    DOWNLOAD_COMMAND true    # no need to download, comes with umbrella
+    SOURCE_DIR ${CMAKE_SOURCE_DIR}/misc/float16_compressor
+    CMAKE_CACHE_ARGS ${UMBRELLA_CMAKECACHE}
+
+    UPDATE_COMMAND ""
+)
