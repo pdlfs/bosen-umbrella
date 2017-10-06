@@ -47,6 +47,8 @@ include (umbrella-init)
 
 project (bosen-umbrella C CXX)
 
+option (UMBRELLA_BUILD_TESTS OFF)   # turn it off
+
 #
 # pull in the main routines
 #
