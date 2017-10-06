@@ -55,7 +55,6 @@ include (umbrella-main)
 #
 # set git tags for modules
 #
-###umbrella_opt_default (BOOST_TAG "436ad1d")        # 1.65.1
 umbrella_opt_default (EIGEN_TAG "5a0156e40feb")      # 3.3.4
 umbrella_opt_default (GFLAGS_TAG "46f73f8")          # v2.2.1
 umbrella_opt_default (GLOG_TAG "2a6df662")           # Oct 2017
@@ -75,7 +74,7 @@ umbrella_opt_default (YAML_CPP_TAG "b57efe9 ")       # 0.5.3
 #
 umbrella_opt_default (GPERFTOOLS_FRAMEPOINTER "on")
 
-###include (umbrella/boost)
+include (umbrella/boost)        # its 1.65.1
 include (umbrella/eigen)
 include (umbrella/gflags)
 include (umbrella/glog)
