@@ -1,0 +1,41 @@
+diff --git a/test/CMakeLists.txt b/test/CMakeLists.txt
+index 61f1f7f..e5a795d 100644
+--- a/test/CMakeLists.txt
++++ b/test/CMakeLists.txt
+@@ -1,8 +1,8 @@
+ set(gtest_force_shared_crt ${MSVC_SHARED_RT} CACHE BOOL
+   "Use shared (DLL) run-time lib even when Google Test built as a static lib.")
+ add_subdirectory(gmock-1.7.0)
+-include_directories(SYSTEM gmock-1.7.0/gtest/include)
+-include_directories(SYSTEM gmock-1.7.0/include)
++include_directories(BEFORE gmock-1.7.0/gtest/include)
++include_directories(BEFORE gmock-1.7.0/include)
+ 
+ if(WIN32 AND BUILD_SHARED_LIBS)
+   add_definitions("-DGTEST_LINKED_AS_SHARED_LIBRARY")
+diff --git a/test/gmock-1.7.0/CMakeLists.txt b/test/gmock-1.7.0/CMakeLists.txt
+index 572d044..2af5142 100644
+--- a/test/gmock-1.7.0/CMakeLists.txt
++++ b/test/gmock-1.7.0/CMakeLists.txt
+@@ -56,7 +56,7 @@ add_subdirectory("${gtest_dir}" "${gmock_BINARY_DIR}/gtest")
+ config_compiler_and_linker()  # from ${gtest_dir}/cmake/internal_utils.cmake
+ 
+ # Adds Google Mock's and Google Test's header directories to the search path.
+-include_directories("${gmock_SOURCE_DIR}/include"
++include_directories(BEFORE "${gmock_SOURCE_DIR}/include"
+                     "${gmock_SOURCE_DIR}"
+                     "${gtest_SOURCE_DIR}/include"
+                     # This directory is needed to build directly from Google
+diff --git a/test/gmock-1.7.0/gtest/CMakeLists.txt b/test/gmock-1.7.0/gtest/CMakeLists.txt
+index 57470c8..0e25403 100644
+--- a/test/gmock-1.7.0/gtest/CMakeLists.txt
++++ b/test/gmock-1.7.0/gtest/CMakeLists.txt
+@@ -52,7 +52,7 @@ include(cmake/internal_utils.cmake)
+ config_compiler_and_linker()  # Defined in internal_utils.cmake.
+ 
+ # Where Google Test's .h files can be found.
+-include_directories(
++include_directories(BEFORE
+   ${gtest_SOURCE_DIR}/include
+   ${gtest_SOURCE_DIR})
+ 
