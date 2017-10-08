@@ -1,1 +1,2 @@
 cache.0/*.tar.gz filter=lfs diff=lfs merge=lfs -text
+misc/newratings.dat.gz filter=lfs diff=lfs merge=lfs -text
