@@ -65,7 +65,6 @@ umbrella_opt_default (GPERFTOOLS_TAG "bf840de")      # 2.6.1
 umbrella_opt_default (LEVELDB_TAG "a53934a")         # 1.20
 umbrella_opt_default (LIBCONFIG_TAG "5a06a16")       # v1.6
 umbrella_opt_default (LIBCUCKOO_TAG "57129c8c")      # Oct 2017
-umbrella_opt_default (LIBZMQ_TAG "8d75d50")          # 4.2.2
 umbrella_opt_default (OPROFILE_TAG "RELEASE_1_2_0")  # 1.2.0
 umbrella_opt_default (SNAPPY_TAG "b02bfa7")          # 1.1.7
 umbrella_opt_default (SPARSEHASH_TAG "6af4bcf")      # 2.0.3
@@ -85,7 +84,7 @@ include (umbrella/gperftools)
 include (umbrella/leveldb)
 include (umbrella/libconfig)
 include (umbrella/libcuckoo)
-include (umbrella/libzmq)
+include (umbrella/libzmq3x)     # default is 3.2.5
 include (umbrella/oprofile)
 include (umbrella/popt)         # its 1.16 from a tar file
 include (umbrella/snappy)
@@ -102,7 +101,7 @@ ExternalProject_Add (float16_compressor
 
     UPDATE_COMMAND ""
 )
-ExternalProject_Add (zmqhpp DEPENDS libzmq
+ExternalProject_Add (zmqhpp DEPENDS libzmq3x
     DOWNLOAD_COMMAND true    # no need to download, comes with umbrella
     SOURCE_DIR ${CMAKE_SOURCE_DIR}/misc/zmqhpp
     CMAKE_CACHE_ARGS ${UMBRELLA_CMAKECACHE}
