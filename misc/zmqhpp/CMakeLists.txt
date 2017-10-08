@@ -52,7 +52,7 @@ install (TARGETS zmqhpp EXPORT zmqhpp-targets)
 install (EXPORT zmqhpp-targets
          DESTINATION ${zmqhpp-pkg-loc}
          FILE "zmqhpp-targets.cmake")
-install (FILES zmqhpp.hpp
+install (FILES zmq.hpp
          DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
 install (FILES "${CMAKE_CURRENT_BINARY_DIR}/zmqhpp-config.cmake"
          "${CMAKE_CURRENT_BINARY_DIR}/zmqhpp-config-version.cmake"

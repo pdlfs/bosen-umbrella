@@ -102,3 +102,10 @@ ExternalProject_Add (float16_compressor
 
     UPDATE_COMMAND ""
 )
+ExternalProject_Add (zmqhpp DEPENDS libzmq
+    DOWNLOAD_COMMAND true    # no need to download, comes with umbrella
+    SOURCE_DIR ${CMAKE_SOURCE_DIR}/misc/zmqhpp
+    CMAKE_CACHE_ARGS ${UMBRELLA_CMAKECACHE}
+
+    UPDATE_COMMAND ""
+)
