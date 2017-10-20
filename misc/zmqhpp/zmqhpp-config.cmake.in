@@ -4,6 +4,10 @@
 
 # if you have depends, uncomment and add them: "find_dependency(Foo 2.4.1)"
 # include (CMakeFindDependencyMacro)
+include ("${CMAKE_CURRENT_LIST_DIR}/xpkg-import.cmake")
+
+# depends
+xpkg_import_module (libzmq3x REQUIRED libzmq)
 
 include ("${CMAKE_CURRENT_LIST_DIR}/zmqhpp-targets.cmake")
 

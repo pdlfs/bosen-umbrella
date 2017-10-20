@@ -10,6 +10,10 @@
 
 cmake_minimum_required(VERSION 3.0)
 project (zmqhpp)
+include (xpkg-import.cmake)
+
+# depends
+xpkg_import_module (libzmq3x REQUIRED libzmq)
 
 # pull in package helpers and set config file install dir for find_package
 include (CMakePackageConfigHelpers)
@@ -32,6 +36,7 @@ set (ZMQHPP_VERSION
 add_library (zmqhpp INTERFACE)
 target_include_directories (zmqhpp
                             INTERFACE $<INSTALL_INTERFACE:include>)
+target_link_libraries (zmqhpp INTERFACE libzmq3x)
 
 #
 # installation stuff (packaging and install commands)
@@ -54,6 +59,7 @@ install (EXPORT zmqhpp-targets
          FILE "zmqhpp-targets.cmake")
 install (FILES zmq.hpp
          DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
-install (FILES "${CMAKE_CURRENT_BINARY_DIR}/zmqhpp-config.cmake"
+install (FILES "xpkg-import.cmake"
+         "${CMAKE_CURRENT_BINARY_DIR}/zmqhpp-config.cmake"
          "${CMAKE_CURRENT_BINARY_DIR}/zmqhpp-config-version.cmake"
          DESTINATION ${zmqhpp-pkg-loc} )
