@@ -32,7 +32,7 @@ umbrella_defineopt (EIGEN_URL_MD5 "1a47e78efe365a97de0c022d127607c3"
 # not everyone has mercurial hg installed, so use URL by default
 umbrella_defineopt (EIGEN_USEURL "ON" BOOLEAN "Use URL to download EIGEN")
 
-umbrella_defineopt (EIGEN_TAR "eigen-${EIGEN_TAG}.tar.gz" 
+umbrella_defineopt (EIGEN_TAR "eigen-3.3.4.tar.gz"  # match EIGEN_URL
     STRING "EIGEN cache tar file")
 
 #
