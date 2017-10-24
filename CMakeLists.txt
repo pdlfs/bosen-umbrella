@@ -48,6 +48,8 @@ include (umbrella-init)
 project (bosen-umbrella C CXX)
 
 option (UMBRELLA_BUILD_TESTS OFF)   # turn it off
+set (BOSEN_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}"
+     CACHE STRING "bosen install directory")
 
 #
 # pull in the main routines
@@ -108,3 +110,48 @@ ExternalProject_Add (zmqhpp DEPENDS libzmq3x
 
     UPDATE_COMMAND ""
 )
+
+#
+# bosen - we install bosen in ${BOSEN_INSTALL_PREFIX} which defaults
+# to ${CMAKE_INSTALL_PREFIX} but can be split out into its own directory.
+# (the main bosen umbrella is big enough you might want to share it across
+# multiple bosen installs).   we also mark it as EXCLUDE_FROM_ALL so it
+# it is only built on request...
+#
+
+# fold in BOSEN_INSTALL_PREFIX
+set (bosen-cmake-cache ${UMBRELLA_CMAKECACHE}
+    -DCMAKE_INSTALL_PREFIX:STRING=${BOSEN_INSTALL_PREFIX})
+
+umbrella_download (BOSEN_DOWNLOAD bosen bosen.tar.gz
+    GIT_REPOSITORY git@github.com:jinliangwei/parameter_server
+    GIT_TAG hpc)
+umbrella_patchcheck (BOSEN_PATCHCMD bosen)
+
+ExternalProject_Add (bosen
+    DEPENDS boost eigen gflags glog googletest gperftools leveldb libconfig
+            libcuckoo libzmq3x oprofile popt snappy sparsehash yaml-cpp
+    ${BOSEN_DOWNLOAD} ${BOSEN_PATCHCMD}
+    CMAKE_ARGS -DBUILD_SHARED_LIBS=ON
+    CMAKE_CACHE_ARGS ${bosen-cmake-cache}
+    UPDATE_COMMAND "")
+set_property (TARGET bosen PROPERTY EXCLUDE_FROM_ALL True)
+
+# and now the apps we want
+ExternalProject_Add (bosen-lda DEPENDS bosen
+    DOWNLOAD_COMMAND true    # no need to download, comes with bosen
+    SOURCE_DIR ${CMAKE_BINARY_DIR}/bosen-prefix/src/bosen/apps/lda
+    CMAKE_CACHE_ARGS ${bosen-cmake-cache}
+
+    UPDATE_COMMAND ""
+)
+set_property (TARGET bosen-lda PROPERTY EXCLUDE_FROM_ALL True)
+
+ExternalProject_Add (bosen-matrixfact DEPENDS bosen
+    DOWNLOAD_COMMAND true    # no need to download, comes with bosen
+    SOURCE_DIR ${CMAKE_BINARY_DIR}/bosen-prefix/src/bosen/apps/matrixfact
+    CMAKE_CACHE_ARGS ${bosen-cmake-cache}
+
+    UPDATE_COMMAND ""
+)
+set_property (TARGET bosen-matrixfact PROPERTY EXCLUDE_FROM_ALL True)
