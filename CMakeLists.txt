@@ -123,6 +123,15 @@ ExternalProject_Add (zmqhpp DEPENDS libzmq3x
 set (bosen-cmake-cache ${UMBRELLA_CMAKECACHE}
     -DCMAKE_INSTALL_PREFIX:STRING=${BOSEN_INSTALL_PREFIX})
 
+# the scripts
+ExternalProject_Add (bosen-scripts
+    DOWNLOAD_COMMAND true    # no need to download, comes with bosen
+    SOURCE_DIR ${CMAKE_SOURCE_DIR}/scripts
+    CMAKE_CACHE_ARGS ${bosen-cmake-cache}
+
+    UPDATE_COMMAND ""
+)
+
 umbrella_download (BOSEN_DOWNLOAD bosen bosen.tar.gz
     GIT_REPOSITORY git@github.com:jinliangwei/parameter_server
     GIT_TAG hpc)
