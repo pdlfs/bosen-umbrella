@@ -36,6 +36,16 @@
 # -DMPIEXEC=/usr/bin/mpiexec
 #
 
+#
+# bosen specific options:
+#  -DBOSEN_INSTALL_PREFIX=/dir - bosen install dir (def: CMAKE_INSTALL_PREFIX)
+#  -DBUILD_BOSEN=OFF - build bosen itself
+#  -DBUILD_UMBRELLA=ON - build third party code
+#
+# if you set DBUILD_UMBRELLA off, we assume you've already build
+# that code (e.g. it is in CMAKE_PREFIX_PATH).
+#
+
 cmake_minimum_required (VERSION 3.0)
 
 #
@@ -47,9 +57,13 @@ include (umbrella-init)
 
 project (bosen-umbrella C CXX)
 
-option (UMBRELLA_BUILD_TESTS OFF)   # turn it off
+# config/options cache variables...
+option (UMBRELLA_BUILD_TESTS "Build umbrella test progs" OFF)   # turn it off
 set (BOSEN_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}"
      CACHE STRING "bosen install directory")
+option (BUILD_BOSEN "Build bosen libs/apps" OFF)
+option (BUILD_UMBRELLA "Build third party (umbrella) code" ON)
+message (STATUS "BUILD_UMBRELLA=${BUILD_UMBRELLA}  BUILD_BOSEN=${BUILD_BOSEN}")
 
 #
 # pull in the main routines
@@ -77,90 +91,96 @@ umbrella_opt_default (YAML_CPP_TAG "b57efe9 ")       # 0.5.3
 #
 umbrella_opt_default (GPERFTOOLS_FRAMEPOINTER "on")
 
-include (umbrella/boost)        # its 1.65.1
-include (umbrella/eigen)
-include (umbrella/gflags)
-include (umbrella/glog)
-include (umbrella/googletest)
-include (umbrella/gperftools)
-include (umbrella/leveldb)
-include (umbrella/libconfig)
-include (umbrella/libcuckoo)
-include (umbrella/libzmq3x)     # default is 3.2.5
-include (umbrella/oprofile)
-include (umbrella/popt)         # its 1.16 from a tar file
-include (umbrella/snappy)
-include (umbrella/sparsehash)
-include (umbrella/yaml-cpp)
+if (BUILD_UMBRELLA)
+    include (umbrella/boost)        # its 1.65.1
+    include (umbrella/eigen)
+    include (umbrella/gflags)
+    include (umbrella/glog)
+    include (umbrella/googletest)
+    include (umbrella/gperftools)
+    include (umbrella/leveldb)
+    include (umbrella/libconfig)
+    include (umbrella/libcuckoo)
+    include (umbrella/libzmq3x)     # default is 3.2.5
+    include (umbrella/oprofile)
+    include (umbrella/popt)         # its 1.16 from a tar file
+    include (umbrella/snappy)
+    include (umbrella/sparsehash)
+    include (umbrella/yaml-cpp)
 
-#
-# other packages
-#
-ExternalProject_Add (float16_compressor
-    DOWNLOAD_COMMAND true    # no need to download, comes with umbrella
-    SOURCE_DIR ${CMAKE_SOURCE_DIR}/misc/float16_compressor
-    CMAKE_CACHE_ARGS ${UMBRELLA_CMAKECACHE}
+    #
+    # other packages
+    #
+    ExternalProject_Add (float16_compressor
+            DOWNLOAD_COMMAND true    # no need to download, comes with umbrella
+        SOURCE_DIR ${CMAKE_SOURCE_DIR}/misc/float16_compressor
+        CMAKE_CACHE_ARGS ${UMBRELLA_CMAKECACHE}
 
-    UPDATE_COMMAND ""
-)
-ExternalProject_Add (zmqhpp DEPENDS libzmq3x
-    DOWNLOAD_COMMAND true    # no need to download, comes with umbrella
-    SOURCE_DIR ${CMAKE_SOURCE_DIR}/misc/zmqhpp
-    CMAKE_CACHE_ARGS ${UMBRELLA_CMAKECACHE}
+        UPDATE_COMMAND ""
+    )
+    ExternalProject_Add (zmqhpp DEPENDS libzmq3x
+        DOWNLOAD_COMMAND true    # no need to download, comes with umbrella
+        SOURCE_DIR ${CMAKE_SOURCE_DIR}/misc/zmqhpp
+        CMAKE_CACHE_ARGS ${UMBRELLA_CMAKECACHE}
 
-    UPDATE_COMMAND ""
-)
+        UPDATE_COMMAND ""
+    )
 
-#
-# bosen - we install bosen in ${BOSEN_INSTALL_PREFIX} which defaults
-# to ${CMAKE_INSTALL_PREFIX} but can be split out into its own directory.
-# (the main bosen umbrella is big enough you might want to share it across
-# multiple bosen installs).   we also mark it as EXCLUDE_FROM_ALL so it
-# it is only built on request...
-#
+    # for bosen build, if enabled
+    set (UMBRELLA_DEPENDS boost eigen gflags glog googletest gperftools
+         leveldb libconfig libcuckoo libzmq3x oprofile popt snappy
+         sparsehash yaml-cpp)
+endif (BUILD_UMBRELLA)
 
-# fold in BOSEN_INSTALL_PREFIX
-set (bosen-cmake-cache ${UMBRELLA_CMAKECACHE}
-    -DCMAKE_INSTALL_PREFIX:STRING=${BOSEN_INSTALL_PREFIX})
+if (BUILD_BOSEN)
+    #
+    # bosen - we install bosen in ${BOSEN_INSTALL_PREFIX} which defaults
+    # to ${CMAKE_INSTALL_PREFIX} but can be split out into its own directory.
+    # (the main bosen umbrella is big enough you might want to share it across
+    # multiple bosen installs).   we only build this on request (if
+    # BUILD_BOSEN is set).
+    #
 
-# the scripts
-ExternalProject_Add (bosen-scripts
-    DOWNLOAD_COMMAND true    # no need to download, comes with bosen
-    SOURCE_DIR ${CMAKE_SOURCE_DIR}/scripts
-    CMAKE_CACHE_ARGS ${bosen-cmake-cache}
+    # fold in BOSEN_INSTALL_PREFIX
+    set (bosen-cmake-cache ${UMBRELLA_CMAKECACHE}
+        -DCMAKE_INSTALL_PREFIX:STRING=${BOSEN_INSTALL_PREFIX})
 
-    UPDATE_COMMAND ""
-)
+    # the scripts
+    ExternalProject_Add (bosen-scripts
+        DOWNLOAD_COMMAND true    # no need to download, comes with bosen
+        SOURCE_DIR ${CMAKE_SOURCE_DIR}/scripts
+        CMAKE_CACHE_ARGS ${bosen-cmake-cache}
 
-umbrella_download (BOSEN_DOWNLOAD bosen bosen.tar.gz
-    GIT_REPOSITORY git@github.com:jinliangwei/parameter_server
-    GIT_TAG hpc)
-umbrella_patchcheck (BOSEN_PATCHCMD bosen)
+        UPDATE_COMMAND ""
+    )
 
-ExternalProject_Add (bosen
-    DEPENDS boost eigen gflags glog googletest gperftools leveldb libconfig
-            libcuckoo libzmq3x oprofile popt snappy sparsehash yaml-cpp
-    ${BOSEN_DOWNLOAD} ${BOSEN_PATCHCMD}
-    CMAKE_ARGS -DBUILD_SHARED_LIBS=ON
-    CMAKE_CACHE_ARGS ${bosen-cmake-cache}
-    UPDATE_COMMAND "")
-set_property (TARGET bosen PROPERTY EXCLUDE_FROM_ALL True)
+    umbrella_download (BOSEN_DOWNLOAD bosen bosen.tar.gz
+        GIT_REPOSITORY git@github.com:jinliangwei/parameter_server
+        GIT_TAG hpc)
+    umbrella_patchcheck (BOSEN_PATCHCMD bosen)
 
-# and now the apps we want
-ExternalProject_Add (bosen-lda DEPENDS bosen
-    DOWNLOAD_COMMAND true    # no need to download, comes with bosen
-    SOURCE_DIR ${CMAKE_BINARY_DIR}/bosen-prefix/src/bosen/apps/lda
-    CMAKE_CACHE_ARGS ${bosen-cmake-cache}
+    ExternalProject_Add (bosen
+        DEPENDS ${UMBRELLA_DEPENDS}
+        ${BOSEN_DOWNLOAD} ${BOSEN_PATCHCMD}
+        CMAKE_ARGS -DBUILD_SHARED_LIBS=ON
+        CMAKE_CACHE_ARGS ${bosen-cmake-cache}
+        UPDATE_COMMAND "")
 
-    UPDATE_COMMAND ""
-)
-set_property (TARGET bosen-lda PROPERTY EXCLUDE_FROM_ALL True)
+    # and now the apps we want
+    ExternalProject_Add (bosen-lda DEPENDS bosen
+        DOWNLOAD_COMMAND true    # no need to download, comes with bosen
+        SOURCE_DIR ${CMAKE_BINARY_DIR}/bosen-prefix/src/bosen/apps/lda
+        CMAKE_CACHE_ARGS ${bosen-cmake-cache}
 
-ExternalProject_Add (bosen-matrixfact DEPENDS bosen
-    DOWNLOAD_COMMAND true    # no need to download, comes with bosen
-    SOURCE_DIR ${CMAKE_BINARY_DIR}/bosen-prefix/src/bosen/apps/matrixfact
-    CMAKE_CACHE_ARGS ${bosen-cmake-cache}
+        UPDATE_COMMAND ""
+    )
 
-    UPDATE_COMMAND ""
-)
-set_property (TARGET bosen-matrixfact PROPERTY EXCLUDE_FROM_ALL True)
+    ExternalProject_Add (bosen-matrixfact DEPENDS bosen
+        DOWNLOAD_COMMAND true    # no need to download, comes with bosen
+        SOURCE_DIR ${CMAKE_BINARY_DIR}/bosen-prefix/src/bosen/apps/matrixfact
+        CMAKE_CACHE_ARGS ${bosen-cmake-cache}
+
+        UPDATE_COMMAND ""
+    )
+
+endif (BUILD_BOSEN)
