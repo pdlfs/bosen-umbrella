@@ -17,10 +17,28 @@ computing platforms.
 
 ### Modules
 
-* bosen dependencies
-  * *TBD*
-* bosen
-  * *TBD*
+* Public Bosen dependencies
+  * float16_compressor
+  * gflags
+  * glog
+  * yaml-cpp
+  * boost
+  * libcuckoo
+* Private Bosen dependencies
+  * snappy
+  * zmqhpp (depends on libzmq3x)
+  * eigen (only ref'd in math_util.cpp)
+* App dependencies
+  * libconfig
+  * gperftools/tcmalloc (apps/caffe)
+  * popt
+  * gtest (apps/caffe)
+  * leveldb (used by apps, petuum_ps_sn)
+  * sparsehash (apps/caffe)
+  * oprofile
+
+* Bosen modules
+  * processor (compresses and verifies BigML input data)
 
 ### Installation
 
@@ -53,4 +71,4 @@ make
 
 ### Execution
 
-TBD
+*TBD*
