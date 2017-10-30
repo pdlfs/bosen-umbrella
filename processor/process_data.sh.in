@@ -37,8 +37,10 @@ set -euo pipefail
 # Tunable parameters #
 ######################
 
-nodes=${1:-"1"}
-procs_per_node=${2:-"4"}
+nodes=${1:-"2"}
+procs_per_node=${2:-"1"}
+indir=${3:-"."}
+outdir=${4:-"."}
 
 ###############
 # Core script #
@@ -62,6 +64,6 @@ common_init
 # @7 log: primary log file for mpi stdout (optional)
 #
 do_mpirun $cores $procs_per_node "" "$all_nodes" \
-    "@CMAKE_INSTALL_PREFIX@/bin/bigml-processor" ""
+    "@CMAKE_INSTALL_PREFIX@/bin/bigml-processor -i $indir -o $outdir" ""
 common_teardown
 exit 0

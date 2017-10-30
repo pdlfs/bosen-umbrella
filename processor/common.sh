@@ -166,8 +166,8 @@ gen_hostfile() {
     fi
 
     # Populate a variable with hosts
-    all_nodes=$(cat ${jobdir}/hosts.txt)
-    num_all_nodes=$(cat ${jobdir}/hosts.txt | tr ',' '\n' | sort | wc -l)
+    all_nodes=$(tr '\n' ',' < ${jobdir}/hosts.txt | sed '$s/,$//')
+    num_all_nodes=$(tr ',' '\n' < ${jobdir}/hosts.txt | sort | wc -l)
     message "-INFO- num hosts = ${num_all_nodes}"
 }
 
@@ -375,5 +375,5 @@ common_init() {
     get_jobdir
 
     # Get machine list
-    gen_hosts
+    gen_hostfile
 }
