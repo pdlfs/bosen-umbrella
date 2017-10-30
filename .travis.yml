@@ -14,6 +14,8 @@ addons:
       - sourceline: 'ppa:george-edison55/cmake-3.x'
       - ubuntu-toolchain-r-test
     packages:
+      - libopenmpi-dev
+      - openmpi-bin
       - git
       - cmake-data
       - cmake
