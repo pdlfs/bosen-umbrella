@@ -62,6 +62,6 @@ common_init
 # @7 log: primary log file for mpi stdout (optional)
 #
 do_mpirun $cores $procs_per_node "" "$all_nodes" \
-    "@CMAKE_INSTALL_PREFIX@/processor/processor" ""
+    "@CMAKE_INSTALL_PREFIX@/bin/bigml-processor" ""
 common_teardown
 exit 0

@@ -125,6 +125,12 @@ if (BUILD_UMBRELLA)
 
         UPDATE_COMMAND ""
     )
+    ExternalProject_Add (bigml-processor
+            DOWNLOAD_COMMAND true   # no need to download, comes with umbrella
+        SOURCE_DIR ${CMAKE_SOURCE_DIR}/processor
+        CMAKE_CACHE_ARGS ${UMBRELLA_CMAKECACHE}
+        UPDATE_COMMAND ""
+    )
 
     # for bosen build, if enabled
     set (UMBRELLA_DEPENDS boost eigen gflags glog googletest gperftools
