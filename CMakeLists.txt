@@ -161,7 +161,7 @@ if (BUILD_BOSEN)
     )
 
     umbrella_download (BOSEN_DOWNLOAD bosen bosen.tar.gz
-        GIT_REPOSITORY git@github.com:jinliangwei/parameter_server
+        GIT_REPOSITORY https://github.com/jinliangwei/parameter_server
         GIT_TAG hpc)
     umbrella_patchcheck (BOSEN_PATCHCMD bosen)
 
