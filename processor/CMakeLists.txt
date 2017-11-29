@@ -9,10 +9,12 @@ set (CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 set (CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 add_executable (bigml-processor bigml-processor.cxx)
+add_executable (bigml-verifier bigml-verifier.cxx)
 
 foreach (lcv ${MPI_CXX_COMPILE_FLAGS_LIST})
     if (NOT ${lcv} STREQUAL "")
         target_compile_options (bigml-processor PUBLIC ${lcv})
+        target_compile_options (bigml-verifier PUBLIC ${lcv})
     endif ()
 endforeach ()
 
@@ -21,13 +23,17 @@ endforeach ()
 #               prefixed in the source directory
 foreach (lcv ${MPI_CXX_INCLUDE_PATH})
     target_include_directories (bigml-processor PUBLIC ${lcv})
+    target_include_directories (bigml-verifier PUBLIC ${lcv})
 endforeach ()
 
 foreach (lcv ${MPI_CXX_LIBRARIES})
     target_link_libraries (bigml-processor ${lcv})
+    target_link_libraries (bigml-verifier ${lcv})
 endforeach ()
 
 set_property (TARGET bigml-processor APPEND PROPERTY LINK_FLAGS
+              ${MPI_CXX_LINK_FLAGS})
+set_property (TARGET bigml-verifier APPEND PROPERTY LINK_FLAGS
               ${MPI_CXX_LINK_FLAGS})
 
 # executable scripts to install
@@ -49,5 +55,6 @@ endforeach ()
 # "make install" rules
 #
 install (TARGETS bigml-processor RUNTIME DESTINATION bin)
+install (TARGETS bigml-verifier RUNTIME DESTINATION bin)
 install (PROGRAMS ${install-scripts} DESTINATION processor)
 install (PROGRAMS ${install-scripts-in-done} DESTINATION processor)
