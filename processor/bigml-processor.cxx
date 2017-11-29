@@ -240,7 +240,7 @@ int main(int argc, char **argv)
     }
 
     if (!indir[0] || !outdir[0]) {
-        fprintf(stderr, "Error: input directory unspecified\n");
+        fprintf(stderr, "Error: input and/or output directory unspecified\n");
         usage();
     }
 
