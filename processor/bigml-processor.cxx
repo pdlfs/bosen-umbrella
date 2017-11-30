@@ -276,8 +276,11 @@ cleanup:
     }
 
     /* Root process collects all MD5 signatures in one file */
-    if (!dryrun && !myrank)
-        merge_md5files(outdir);
+    if (!dryrun) {
+        MPI_Barrier(MPI_COMM_WORLD);
+        if (!myrank)
+            merge_md5files(outdir);
+    }
 
     MPI_Finalize();
     return ret;
