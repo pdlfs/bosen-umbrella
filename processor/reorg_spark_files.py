@@ -16,7 +16,8 @@ def process_file(fp, ind, outd, dr):
         if (dr):
             print "[DATA] " + src + " ~> " + dst
         else:
-            os.makedirs(dstd)
+            if (os.path.exists(dstd) == False):
+                os.makedirs(dstd)
             os.rename(src, dst)
         return 0
 
@@ -28,7 +29,8 @@ def process_file(fp, ind, outd, dr):
         if (dr):
             print "[DICT] " + src + " ~> " + dst
         else:
-            os.makedirs(dstd)
+            if (os.path.exists(dstd) == False):
+                os.makedirs(dstd)
             os.rename(src, dst)
         return 0
 
@@ -40,11 +42,12 @@ def process_file(fp, ind, outd, dr):
         if (dr):
             print "[STAT] " + src + " ~> " + dst
         else:
-            os.makedirs(dstd)
+            if (os.path.exists(dstd) == False):
+                os.makedirs(dstd)
             os.rename(src, dst)
         return 0
 
-    print "Unknown file"
+    print "Unknown file type: ", fp
     return 1
 
 # Configure command line option parser
