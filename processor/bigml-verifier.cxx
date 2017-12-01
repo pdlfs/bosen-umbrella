@@ -75,7 +75,7 @@ int pick_files(void)
     return 0;
 }
 
-int process_file(char *buf)
+int process_file(char *buf, char *indir)
 {
     char *hash, *fpath;
     char syscmd[2*PATH_MAX];
@@ -95,13 +95,13 @@ int process_file(char *buf)
     }
 
     /* Check md5 hash */
-    snprintf(syscmd, sizeof(syscmd), "echo \"%s %s\" | md5sum -c > /dev/null",
-             hash, fpath);
+    snprintf(syscmd, sizeof(syscmd), "echo \"%s %s/%s\" | md5sum -c > /dev/null",
+             hash, indir, fpath);
 #ifdef DEBUG_VERIFIER
     fprintf(stderr, "Executing: %s\n", syscmd);
 #endif
     if (system(syscmd))
-        fprintf(stderr, "Error: md5sum failed for %s\n", fpath);
+        fprintf(stderr, "Error: md5sum failed for %s/%s\n", indir, fpath);
 
     return 0;
 }
@@ -167,7 +167,7 @@ int main(int argc, char **argv)
         goto cleanup;
 
     for (it = files.begin(); it != files.end(); ++it) {
-        if (process_file(*it)) {
+        if (process_file(*it, indir)) {
             fprintf(stderr, "%d: process_file failed\n", myrank);
             break;
         }
