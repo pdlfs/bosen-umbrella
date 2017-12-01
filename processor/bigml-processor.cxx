@@ -138,8 +138,8 @@ int process_file(char *path, char *indir, char *outdir)
     if (system(syscmd))
         msg_abort("gzip failed");
 
-    snprintf(syscmd, sizeof(syscmd), "md5sum %s | sed 's/  /:/g' >> %s/"
-                                     MD5FNAME ".%05d", dstp, outdir, myrank);
+    snprintf(syscmd, sizeof(syscmd), "md5sum %s | sed 's/  /:/g;s:%s::g' >> %s/"
+                     MD5FNAME ".%05d", dstp, outdir, outdir, myrank);
 #ifdef DEBUG_PROCESSOR
     fprintf(stderr, "Executing: %s\n", syscmd);
 #endif
