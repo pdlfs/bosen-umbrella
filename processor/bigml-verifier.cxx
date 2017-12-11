@@ -28,7 +28,7 @@ void usage(void)
            "usage: %s [options] -i input_dir\n"
            "  options:\n"
            "    -d        Dry run: no actions applied on data\n"
-           "    -x        Decompress all data\n"
+           "    -x [dir]  Decompress all verified files in dir\n"
            "    -h        This usage info\n"
            "\n",
            me);
@@ -77,11 +77,11 @@ int pick_files(void)
     return 0;
 }
 
-int process_file(char *buf, char *indir)
+int process_file(char *buf, char *indir, char *outdir)
 {
     char *hash, *fpath;
     char syscmd[2*PATH_MAX];
-    int md5ret = 0;
+    int ret = 0;
 
     hash = buf;
     fpath = buf+33;
@@ -103,17 +103,28 @@ int process_file(char *buf, char *indir)
 #ifdef DEBUG_VERIFIER
     fprintf(stderr, "Executing: %s\n", syscmd);
 #endif
-    md5ret = system(syscmd);
-    if (md5ret) {
+    ret = system(syscmd);
+    if (ret) {
         fprintf(stderr, "Error: md5sum failed for %s/%s\n", indir, fpath);
     } else if (xtract) {
+        /* If output destination doesn't exist create it */
+        snprintf(syscmd, sizeof(syscmd), "mkdir -p $(dirname %s/%s)",
+                 outdir, fpath);
+#ifdef DEBUG_PROCESSOR
+        fprintf(stderr, "Executing: %s\n", syscmd);
+#endif
+        ret = system(syscmd);
+        if (ret && ret != EEXIST)
+            msg_abort("mkdir failed");
+
         /* MD5 sum matched; extract data in place */
-        snprintf(syscmd, sizeof(syscmd), "gunzip -k %s/%s", indir, fpath);
+        snprintf(syscmd, sizeof(syscmd), "gunzip -c %s/%s > $(dirname %s/%s)/$(basename %s .gz)",
+                 indir, fpath, outdir, fpath, fpath);
 #ifdef DEBUG_VERIFIER
         fprintf(stderr, "Executing: %s\n", syscmd);
 #endif
         if (system(syscmd))
-            fprintf(stderr, "Error: failed to extract data of %s/%s\n",
+            fprintf(stderr, "Error: failed to extract data from %s/%s\n",
                     indir, fpath);
     }
 
@@ -123,7 +134,7 @@ int process_file(char *buf, char *indir)
 int main(int argc, char **argv)
 {
     int ret, c;
-    char indir[PATH_MAX], temp[PATH_MAX];
+    char indir[PATH_MAX], outdir[PATH_MAX], temp[PATH_MAX];
     char syscmd[PATH_MAX+256];
 
     if (MPI_Init(&argc, &argv) != MPI_SUCCESS) {
@@ -144,9 +155,9 @@ int main(int argc, char **argv)
 
     me = argv[0];
     dryrun = xtract = 0;
-    indir[0] = '\0';
+    indir[0] = outdir[0] = '\0';
 
-    while ((c = getopt(argc, argv, "hdxi:")) != -1) {
+    while ((c = getopt(argc, argv, "hdx:i:")) != -1) {
         switch(c) {
         case 'h': /* print help */
             usage();
@@ -155,6 +166,10 @@ int main(int argc, char **argv)
             break;
         case 'x': /* extract data */
             xtract = 1;
+            if (!strncpy(outdir, optarg, PATH_MAX)) {
+                perror("Error: invalid output dir");
+                usage();
+            }
             break;
         case 'i': /* input directory */
             if (!strncpy(indir, optarg, PATH_MAX)) {
@@ -172,6 +187,11 @@ int main(int argc, char **argv)
         usage();
     }
 
+    if (!outdir[0]) {
+        fprintf(stderr, "Error: output directory unspecified\n");
+        usage();
+    }
+
     snprintf(temp, sizeof(temp), "%s/" MD5FNAME, indir);
     if (!(md5fp = fopen(temp, "r")))
         msg_abort("fopen failed");
@@ -184,7 +204,7 @@ int main(int argc, char **argv)
         goto cleanup;
 
     for (it = files.begin(); it != files.end(); ++it) {
-        if (process_file(*it, indir)) {
+        if (process_file(*it, indir, outdir)) {
             fprintf(stderr, "%d: process_file failed\n", myrank);
             break;
         }
