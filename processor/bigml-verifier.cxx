@@ -13,6 +13,7 @@ using namespace std;
 
 char *me;
 int dryrun;
+int xtract;
 int myrank;
 int worldsz;
 FILE *md5fp;
@@ -27,6 +28,7 @@ void usage(void)
            "usage: %s [options] -i input_dir\n"
            "  options:\n"
            "    -d        Dry run: no actions applied on data\n"
+           "    -x        Decompress all data\n"
            "    -h        This usage info\n"
            "\n",
            me);
@@ -79,6 +81,7 @@ int process_file(char *buf, char *indir)
 {
     char *hash, *fpath;
     char syscmd[2*PATH_MAX];
+    int md5ret = 0;
 
     hash = buf;
     fpath = buf+33;
@@ -100,8 +103,19 @@ int process_file(char *buf, char *indir)
 #ifdef DEBUG_VERIFIER
     fprintf(stderr, "Executing: %s\n", syscmd);
 #endif
-    if (system(syscmd))
+    md5ret = system(syscmd);
+    if (md5ret) {
         fprintf(stderr, "Error: md5sum failed for %s/%s\n", indir, fpath);
+    } else if (xtract) {
+        /* MD5 sum matched; extract data in place */
+        snprintf(syscmd, sizeof(syscmd), "gunzip -k %s/%s", indir, fpath);
+#ifdef DEBUG_VERIFIER
+        fprintf(stderr, "Executing: %s\n", syscmd);
+#endif
+        if (system(syscmd))
+            fprintf(stderr, "Error: failed to extract data of %s/%s\n",
+                    indir, fpath);
+    }
 
     return 0;
 }
@@ -129,15 +143,18 @@ int main(int argc, char **argv)
 #endif
 
     me = argv[0];
-    dryrun = 0;
+    dryrun = xtract = 0;
     indir[0] = '\0';
 
-    while ((c = getopt(argc, argv, "hdi:")) != -1) {
+    while ((c = getopt(argc, argv, "hdxi:")) != -1) {
         switch(c) {
         case 'h': /* print help */
             usage();
         case 'd': /* this is a dry run */
             dryrun = 1;
+            break;
+        case 'x': /* extract data */
+            xtract = 1;
             break;
         case 'i': /* input directory */
             if (!strncpy(indir, optarg, PATH_MAX)) {
